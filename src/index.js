@@ -22,11 +22,14 @@ function isAllTrue(array, fn) {
     if (typeof fn != 'function') {
         throw new Error('fn is not a function');
     }
-    if (array.length==0 || !Array.isArray(array)) {
+    if (!array.length || !Array.isArray(array)) {
         throw new Error('empty array');
     }
-    for (var i=0;i<array.length;i++) {
+    for (var i=0; i<array.length; i++) {
         result = fn(array[i]);
+        if (!result) {
+            break;
+        }
     }
 
     return result;
@@ -51,14 +54,17 @@ function isAllTrue(array, fn) {
 function isSomeTrue(array, fn) {
     var result;
 
-    if (array.length==0 || !Array.isArray(array)) {
+    if (!array.length || !Array.isArray(array)) {
         throw new Error('empty array');
     }
     if (typeof fn != 'function') {
         throw new Error('fn is not a function');
     }
-    for (var i=0;i<array.length;i++) {
+    for (var i=0; i<array.length; i++) {
         result = fn(array[i]);
+        if (result) {
+            break;
+        }
     }
 
     return result;
@@ -85,7 +91,7 @@ function returnBadArguments(fn, ...args) {
 
         return [];
     }
-    for (var i=0;i<args.length;i++) {
+    for (var i=0; i<args.length; i++) {
         try {
             fn(args[i]);
         } catch (e) {
@@ -117,47 +123,18 @@ function calculator(number = 0) {
     if (!isFinite(number)) {
         throw new Error ('number is not a number');
     }
-    var obj = {};
-
-    obj.sum = function() {
-        var result = number;
-
-        for (var i=0;i<arguments.length;i++) {
-            result += arguments[i];
-        }
-
-        return result;
-    }
-    obj.dif = function() {
-        var result = number;
-
-        for (var i=0;i<arguments.length;i++) {
-            result -= arguments[i];
-        }
-
-        return result;
-    }
-    obj.div = function() {
-        var result = number;
-
-        for (var i=0;i<arguments.length;i++) {
-            if (arguments[i]==0) {
+    var obj = {
+        sum: (...args) => args.reduce((a, b) => a+b, number),
+        dif: (...args) => args.reduce((a, b) => a-b, number),   
+        div: (...args) => args.reduce(function(a, b) {
+            if (!a || !b) {
                 throw new Error ('division by 0');
             }
-            result = result/arguments[i];
-        }
 
-        return result;
-    }
-    obj.mul = function() {
-        var result = number;
-
-        for (var i=0;i<arguments.length;i++) {
-            result = result*arguments[i];
-        }
-
-        return result;
-    }
+            return a/b;
+        }, number),    
+        mul: (...args) => args.reduce((a, b) => a*b, number)   
+    };
 
     return obj;
 }
