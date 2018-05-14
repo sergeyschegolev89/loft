@@ -129,7 +129,7 @@ describe('ДЗ 4 - Работа с DOM', () => {
         });
     });
 
-/*    describe('observeChildNodes', () => {
+    describe('observeChildNodes', () => {
         it('должна вызывать fn при добавлении элементов в указанный элемент', done => {
             let where = document.createElement('div');
             let fn = info => {
@@ -239,5 +239,5 @@ describe('ДЗ 4 - Работа с DOM', () => {
 
             document.body.removeChild(where);
         });
-    });*/
+    });
 });

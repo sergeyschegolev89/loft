@@ -50,7 +50,7 @@ function prepend(what, where) {
    findAllPSiblings(document.body) // функция должна вернуть массив с элементами div и span т.к. следующим соседом этих элементов является элемент с тегом P
  */
 function findAllPSiblings(where) {
-    let array = [];
+    const array = [];
 
     for (let elem of where.childNodes) {
         if (elem.nextSibling !== null && elem.nextSibling.tagName === 'P') {
@@ -179,14 +179,14 @@ function collectDOMStat(root) {
             if (childNode.nodeType == 1) {
                 let prop = childNode.tagName;
 
-                if (result.tags.hasOwnProperty(prop)) {
+                if (result.tags[prop]) {
                     result.tags[prop]++;
                 } else {
                     result.tags[prop] = 1;
                 }
 
                 for ( let cls of childNode.classList ) {
-                    if (result.classes.hasOwnProperty(cls)) {
+                    if (result.classes[cls]) {
                         result.classes[cls]++;
                     } else {
                         result.classes[cls] = 1;
@@ -232,6 +232,30 @@ function collectDOMStat(root) {
    }
  */
 function observeChildNodes(where, fn) {
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            let arradnodes;
+
+            if (mutation.addedNodes.length) {
+                arradnodes = [];
+                for (let addnode of mutation.addedNodes) {
+                    arradnodes.push(addnode);
+                }
+                fn({ type: 'insert', nodes: arradnodes });
+            }
+            if (mutation.removeNodes.length) {
+                arradnodes = [];
+                for (let remnode of mutation.removedNodes) {
+                    arradnodes.push(remnode);
+                }
+                fn({ type: 'remove', nodes: arradnodes });
+            }
+        });
+    });
+
+    var config = { childList: true, subtree: true };
+
+    observer.observe(where, config)
 }
 
 export {
